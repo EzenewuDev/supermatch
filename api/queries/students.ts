@@ -1,7 +1,7 @@
 import { eq, desc, like, and, count } from "drizzle-orm";
-import { getDb } from "./connection";
-import { students, preferences, supervisors } from "@db/schema";
-import type { InsertStudent } from "@db/schema";
+import { getDb } from "./connection.js";
+import { students, preferences, supervisors } from "../../db/schema.js";
+import type { InsertStudent } from "../../db/schema.js";
 
 export async function findAllStudents(filters?: {
   search?: string;
@@ -86,8 +86,8 @@ export async function findStudentWithPreferences(id: number) {
 
 export async function createStudent(data: InsertStudent) {
   const db = getDb();
-  const result = await db.insert(students).values(data).$returningId();
-  return findStudentById(result[0].id);
+  const result = await db.insert(students).values(data).returning({ insertedId: students.id });
+  return findStudentById(result[0].insertedId);
 }
 
 export async function updateStudent(id: number, data: Partial<InsertStudent>) {

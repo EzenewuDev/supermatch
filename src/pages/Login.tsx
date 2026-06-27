@@ -13,7 +13,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  // useAuth removed since we no longer redirect
 
   const loginMutation = trpc.auth.login.useMutation({
     onSuccess: () => {

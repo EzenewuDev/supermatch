@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
-import * as schema from "@db/schema";
-import type { InsertUser } from "@db/schema";
-import { getDb } from "./connection";
-import { env } from "../lib/env";
+import * as schema from "../../db/schema.js";
+import type { InsertUser } from "../../db/schema.js";
+import { getDb } from "./connection.js";
+import { env } from "../lib/env.js";
 
 export async function findUserByUnionId(unionId: string) {
   const rows = await getDb()
@@ -68,5 +68,8 @@ export async function upsertUser(data: InsertUser) {
   await getDb()
     .insert(schema.users)
     .values(values)
-    .onDuplicateKeyUpdate({ set: updateSet });
+    .onConflictDoUpdate({
+      target: schema.users.email,
+      set: updateSet,
+    });
 }

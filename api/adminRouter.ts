@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createRouter, adminQuery } from "./middleware";
+import { createRouter, adminQuery } from "./middleware.js";
 import {
   findAllStudents,
   findStudentById,
@@ -11,7 +11,7 @@ import {
   getUnallocatedCount,
   getDepartments,
   getLevels,
-} from "./queries/students";
+} from "./queries/students.js";
 import {
   findAllSupervisors,
   findSupervisorById,
@@ -20,14 +20,14 @@ import {
   deleteSupervisor,
   getSupervisorCount,
   getLoadDistribution,
-} from "./queries/supervisors";
+} from "./queries/supervisors.js";
 import {
   findAllAllocations,
   getFirstPreferenceRate,
   getRecentAllocations,
   runAllocationAlgorithm,
   exportAllocationsToCSV,
-} from "./queries/allocations";
+} from "./queries/allocations.js";
 
 export const adminRouter = createRouter({
   dashboard: createRouter({
@@ -104,7 +104,7 @@ export const adminRouter = createRouter({
         return createStudent({
           studentId: input.studentId,
           name: input.name,
-          cgpa: String(input.cgpa),
+          cgpa: input.cgpa,
           department: input.department,
           level: input.level,
         });
@@ -184,7 +184,7 @@ export const adminRouter = createRouter({
             await createStudent({
               studentId,
               name,
-              cgpa: String(cgpa),
+              cgpa: cgpa,
               department,
               level,
             });

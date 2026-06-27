@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/libsql";
 import { createClient } from "@libsql/client";
-import { env } from "../lib/env";
-import * as schema from "@db/schema";
+import { env } from "../lib/env.js";
+import * as schema from "../../db/schema.js";
 import * as relations from "@db/relations";
 
 const fullSchema = { ...schema, ...relations };

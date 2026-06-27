@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { createRouter, authedQuery } from "./middleware";
+import { createRouter, authedQuery } from "./middleware.js";
 import {
   findPreferencesByStudent,
   savePreferences,
-} from "./queries/preferences";
-import { findAvailableSupervisors } from "./queries/supervisors";
-import { getDb } from "./queries/connection";
-import { students, userRoles } from "@db/schema";
+} from "./queries/preferences.js";
+import { findAvailableSupervisors } from "./queries/supervisors.js";
+import { getDb } from "./queries/connection.js";
+import { students, userRoles } from "../db/schema.js";
 import { eq, and } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 

@@ -15,7 +15,7 @@ export default function Signup() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  // useAuth removed since we no longer redirect
 
   const signupMutation = trpc.auth.signup.useMutation({
     onSuccess: () => {

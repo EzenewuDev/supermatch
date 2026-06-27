@@ -1,7 +1,7 @@
-import { createRouter, authedQuery } from "./middleware";
-import { findSupervisorWithStudents } from "./queries/supervisors";
-import { getDb } from "./queries/connection";
-import { supervisors } from "@db/schema";
+import { createRouter, authedQuery } from "./middleware.js";
+import { findSupervisorWithStudents } from "./queries/supervisors.js";
+import { getDb } from "./queries/connection.js";
+import { supervisors } from "../db/schema.js";
 import { eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";

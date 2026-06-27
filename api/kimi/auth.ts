@@ -1,8 +1,8 @@
 import * as cookie from "cookie";
 import { Session } from "@contracts/constants";
 import { Errors } from "@contracts/errors";
-import { signSessionToken, verifySessionToken } from "./session";
-import { findUserById, findUserByEmail, createUser, updateLastSignIn } from "../queries/users";
+import { signSessionToken, verifySessionToken } from "./session.js";
+import { findUserById, findUserByEmail, createUser, updateLastSignIn } from "../queries/users.js";
 import { createHash } from "crypto";
 
 // Simple hash function (NOT PRODUCTION READY - just for demo)

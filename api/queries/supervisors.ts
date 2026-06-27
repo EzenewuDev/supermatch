@@ -1,7 +1,7 @@
 import { eq, count, desc } from "drizzle-orm";
-import { getDb } from "./connection";
-import { supervisors, allocations, students } from "@db/schema";
-import type { InsertSupervisor } from "@db/schema";
+import { getDb } from "./connection.js";
+import { supervisors, allocations, students } from "../../db/schema.js";
+import type { InsertSupervisor } from "../../db/schema.js";
 
 export async function findAllSupervisors() {
   const db = getDb();
@@ -52,8 +52,8 @@ export async function findSupervisorWithStudents(id: number) {
 
 export async function createSupervisor(data: InsertSupervisor) {
   const db = getDb();
-  const result = await db.insert(supervisors).values(data).$returningId();
-  return findSupervisorById(result[0].id);
+  const result = await db.insert(supervisors).values(data).returning({ insertedId: supervisors.id });
+  return findSupervisorById(result[0].insertedId);
 }
 
 export async function updateSupervisor(id: number, data: Partial<InsertSupervisor>) {

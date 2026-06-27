@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import { getDb } from "./connection";
-import { preferences, supervisors } from "@db/schema";
+import { getDb } from "./connection.js";
+import { preferences, supervisors } from "../../db/schema.js";
 
 export async function findPreferencesByStudent(studentId: number) {
   const db = getDb();

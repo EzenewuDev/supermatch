@@ -1,6 +1,6 @@
 import { eq, desc, count } from "drizzle-orm";
-import { getDb } from "./connection";
-import { allocations, students, supervisors, preferences } from "@db/schema";
+import { getDb } from "./connection.js";
+import { allocations, students, supervisors, preferences } from "../../db/schema.js";
 
 export async function findAllAllocations(filter?: "all" | "allocated" | "unallocated") {
   const db = getDb();

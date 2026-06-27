@@ -1,10 +1,10 @@
 import * as cookie from "cookie";
 import { z } from "zod";
 import { Session } from "@contracts/constants";
-import { getSessionCookieOptions } from "./lib/cookies";
-import { createRouter, authedQuery, publicQuery } from "./middleware";
-import { signupUser, loginUser } from "./kimi/auth";
-import { signSessionToken } from "./kimi/session";
+import { getSessionCookieOptions } from "./lib/cookies.js";
+import { createRouter, authedQuery, publicQuery } from "./middleware.js";
+import { signupUser, loginUser } from "./kimi/auth.js";
+import { signSessionToken } from "./kimi/session.js";
 
 export const authRouter = createRouter({
   me: authedQuery.query((opts) => opts.ctx.user),
