@@ -13,5 +13,5 @@
     "esModuleInterop": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["api", "contracts", "db"]
+  "include": ["server", "api", "contracts", "db"]
 }

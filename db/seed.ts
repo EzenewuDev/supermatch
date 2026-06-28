@@ -1,4 +1,4 @@
-import { getDb } from "../api/queries/connection.js";
+import { getDb } from "../server/queries/connection.js";
 import { students, supervisors, preferences } from "./schema.js";
 
 const DEPARTMENTS = ["Computer Science", "Electrical Engineering", "Mechanical Engineering", "Civil Engineering", "Mathematics"];
