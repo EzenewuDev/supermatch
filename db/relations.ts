@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { users, userRoles, students, supervisors, preferences, allocations } from "./schema";
+import { users, userRoles, students, supervisors, preferences, allocations } from "./schema.js";
 
 export const usersRelations = relations(users, ({ many }) => ({
   roles: many(userRoles),

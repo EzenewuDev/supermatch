@@ -1,5 +1,5 @@
-import { getDb } from "../api/queries/connection";
-import { students, supervisors, preferences } from "./schema";
+import { getDb } from "../api/queries/connection.js";
+import { students, supervisors, preferences } from "./schema.js";
 
 const DEPARTMENTS = ["Computer Science", "Electrical Engineering", "Mechanical Engineering", "Civil Engineering", "Mathematics"];
 const LEVELS = ["300", "400", "MSc"];
@@ -90,15 +90,15 @@ async function seed() {
   console.log(`Inserted ${insertedStudents.length} students`);
 
   // Seed preferences for each student (5 random supervisors, ranked 1-5)
-  const supervisorIds = insertedSupervisors.map((s) => s.id);
+  const supervisorIds = insertedSupervisors.map((s: { id: number }) => s.id);
   const preferenceData: { studentId: number; supervisorId: number; preferenceRank: number }[] = [];
 
   for (const student of insertedStudents) {
     const shuffled = shuffleArray(supervisorIds).slice(0, 5);
     for (let rank = 0; rank < shuffled.length; rank++) {
       preferenceData.push({
-        studentId: student.id,
-        supervisorId: shuffled[rank],
+        studentId: student.id as number,
+        supervisorId: shuffled[rank] as number,
         preferenceRank: rank + 1,
       });
     }
