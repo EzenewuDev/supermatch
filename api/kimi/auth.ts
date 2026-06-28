@@ -1,6 +1,6 @@
 import * as cookie from "cookie";
-import { Session } from "@contracts/constants";
-import { Errors } from "@contracts/errors";
+import { Session } from "../../contracts/constants.js";
+import { Errors } from "../../contracts/errors.js";
 import { verifySessionToken } from "./session.js";
 import { findUserById, findUserByEmail, createUser, updateLastSignIn } from "../queries/users.js";
 import { createHash } from "crypto";

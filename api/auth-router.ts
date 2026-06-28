@@ -1,6 +1,6 @@
 import * as cookie from "cookie";
 import { z } from "zod";
-import { Session } from "@contracts/constants";
+import { Session } from "../contracts/constants.js";
 import { getSessionCookieOptions } from "./lib/cookies.js";
 import { createRouter, authedQuery, publicQuery } from "./middleware.js";
 import { signupUser, loginUser } from "./kimi/auth.js";
