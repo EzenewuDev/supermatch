@@ -10,7 +10,7 @@ export async function findUserByUnionId(unionId: string) {
     .from(schema.users)
     .where(eq(schema.users.unionId, unionId))
     .limit(1);
-  return rows.at(0);
+  return rows[0];
 }
 
 export async function findUserByEmail(email: string) {
@@ -19,7 +19,7 @@ export async function findUserByEmail(email: string) {
     .from(schema.users)
     .where(eq(schema.users.email, email))
     .limit(1);
-  return rows.at(0);
+  return rows[0];
 }
 
 export async function findUserById(id: number) {
@@ -28,7 +28,7 @@ export async function findUserById(id: number) {
     .from(schema.users)
     .where(eq(schema.users.id, id))
     .limit(1);
-  return rows.at(0);
+  return rows[0];
 }
 
 export async function createUser(data: InsertUser) {
@@ -38,8 +38,9 @@ export async function createUser(data: InsertUser) {
   }
   const result = await getDb()
     .insert(schema.users)
-    .values(values);
-  return result;
+    .values(values)
+    .returning({ insertedId: schema.users.id });
+  return result[0];
 }
 
 export async function updateLastSignIn(id: number) {

@@ -24,7 +24,7 @@ export async function findSupervisorById(id: number) {
     .from(supervisors)
     .where(eq(supervisors.id, id))
     .limit(1);
-  return rows.at(0);
+  return rows[0];
 }
 
 export async function findSupervisorWithStudents(id: number) {

@@ -1,7 +1,7 @@
 import * as cookie from "cookie";
 import { Session } from "@contracts/constants";
 import { Errors } from "@contracts/errors";
-import { signSessionToken, verifySessionToken } from "./session.js";
+import { verifySessionToken } from "./session.js";
 import { findUserById, findUserByEmail, createUser, updateLastSignIn } from "../queries/users.js";
 import { createHash } from "crypto";
 
@@ -48,7 +48,7 @@ export async function signupUser(
     email,
     passwordHash,
   });
-  const userId = Number(result.insertId);
+  const userId = result.insertedId;
   await updateLastSignIn(userId);
   const user = await findUserById(userId);
   if (!user) throw new Error("Failed to create user");

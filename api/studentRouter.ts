@@ -34,7 +34,7 @@ export const studentRouter = createRouter({
         .from(students)
         .where(eq(students.userId, ctx.user.id))
         .limit(1);
-      student = studentRows.at(0);
+      student = studentRows[0];
     }
 
     if (!student) {
@@ -44,7 +44,7 @@ export const studentRouter = createRouter({
         .from(students)
         .orderBy(students.id)
         .limit(1);
-      student = allStudents.at(0);
+      student = allStudents[0];
     }
 
     if (!student) {
@@ -147,14 +147,14 @@ export const studentRouter = createRouter({
       .where(eq(students.userId, ctx.user.id))
       .limit(1);
 
-    let student = studentRows.at(0);
+    let student = studentRows[0];
     if (!student) {
       const allStudents = await db
         .select()
         .from(students)
         .orderBy(students.id)
         .limit(1);
-      student = allStudents.at(0);
+      student = allStudents[0];
     }
 
     if (!student) {
@@ -223,14 +223,14 @@ export const studentRouter = createRouter({
         .where(eq(students.userId, ctx.user.id))
         .limit(1);
 
-      let student = studentRows.at(0);
+      let student = studentRows[0];
       if (!student) {
         const allStudents = await db
           .select()
           .from(students)
           .orderBy(students.id)
           .limit(1);
-        student = allStudents.at(0);
+        student = allStudents[0];
       }
 
       if (!student) return [];
@@ -278,14 +278,14 @@ export const studentRouter = createRouter({
           .where(eq(students.userId, ctx.user.id))
           .limit(1);
 
-        let student = studentRows.at(0);
+        let student = studentRows[0];
         if (!student) {
           const allStudents = await db
             .select()
             .from(students)
             .orderBy(students.id)
             .limit(1);
-          student = allStudents.at(0);
+          student = allStudents[0];
         }
 
         if (!student) {

@@ -62,7 +62,7 @@ export async function findStudentById(id: number) {
     .from(students)
     .where(eq(students.id, id))
     .limit(1);
-  return rows.at(0);
+  return rows[0];
 }
 
 export async function findStudentWithPreferences(id: number) {

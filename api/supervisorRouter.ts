@@ -17,7 +17,7 @@ export const supervisorRouter = createRouter({
       .where(eq(supervisors.userId, ctx.user.id))
       .limit(1);
 
-    let supervisor = supervisorRows.at(0);
+    let supervisor = supervisorRows[0];
     if (!supervisor) {
       // Demo fallback: get first supervisor
       const allSupervisors = await db
@@ -25,7 +25,7 @@ export const supervisorRouter = createRouter({
         .from(supervisors)
         .orderBy(supervisors.id)
         .limit(1);
-      supervisor = allSupervisors.at(0);
+      supervisor = allSupervisors[0];
     }
 
     if (!supervisor) {
@@ -74,7 +74,7 @@ export const supervisorRouter = createRouter({
         .where(eq(supervisors.userId, ctx.user.id))
         .limit(1);
 
-      let supervisor = supervisorRows.at(0);
+      let supervisor = supervisorRows[0];
       if (!supervisor) {
         // Demo fallback
         const allSupervisors = await db
@@ -82,7 +82,7 @@ export const supervisorRouter = createRouter({
           .from(supervisors)
           .orderBy(supervisors.id)
           .limit(1);
-        supervisor = allSupervisors.at(0);
+        supervisor = allSupervisors[0];
       }
 
       if (!supervisor) {
