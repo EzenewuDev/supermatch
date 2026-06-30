@@ -336,7 +336,7 @@ function CreateProfileForm({ onCreated }: { onCreated: () => void }) {
   const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: user?.name || "",
-    studentId: "",
+    studentId: user?.matricNo || "",
     cgpa: "",
     department: "",
     level: "",

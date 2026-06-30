@@ -10,9 +10,24 @@ import { findUserRole } from "./queries/users.js";
 export const authRouter = createRouter({
   me: authedQuery.query((opts) => opts.ctx.user),
   signup: publicQuery
-    .input(z.object({ name: z.string().min(1), email: z.string().email(), password: z.string().min(6), role: z.enum(["student", "supervisor"]) }))
+    .input(z.object({ 
+      name: z.string().min(1), 
+      email: z.string().email(), 
+      password: z.string().min(6), 
+      role: z.enum(["student", "supervisor"]),
+      matricNo: z.string().optional()
+    }))
     .mutation(async ({ ctx, input }) => {
-      const user = await signupUser(input.name, input.email, input.password, input.role);
+      // If role is student, matricNo is required and must match format LCU/UG/XX/XXXXX where X is a digit
+      if (input.role === "student") {
+        if (!input.matricNo) {
+          throw new Error("Matric No is required for students");
+        }
+        if (!/^LCU\/UG\/\d{2}\/\d{5}$/.test(input.matricNo)) {
+          throw new Error("Matric No must be in the format LCU/UG/XX/XXXXX (e.g. LCU/UG/21/12345)");
+        }
+      }
+      const user = await signupUser(input.name, input.email, input.password, input.role, input.matricNo);
       const token = await signSessionToken({ userId: user.id });
       const opts = getSessionCookieOptions(ctx.req.headers);
       ctx.resHeaders.append(

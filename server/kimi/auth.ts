@@ -38,6 +38,7 @@ export async function signupUser(
   email: string,
   password: string,
   role: "student" | "supervisor",
+  matricNo?: string,
 ) {
   const existingUser = await findUserByEmail(email);
   if (existingUser) {
@@ -48,6 +49,7 @@ export async function signupUser(
     name,
     email,
     passwordHash,
+    matricNo,
   });
   const userId = result.insertedId;
   await assignUserRole(userId, role);

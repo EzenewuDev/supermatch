@@ -14,9 +14,9 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState<"student" | "supervisor">("student");
+  const [matricNo, setMatricNo] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  // useAuth removed since we no longer redirect
 
   const signupMutation = trpc.auth.signup.useMutation({
     onSuccess: (_, variables) => {
@@ -34,7 +34,11 @@ export default function Signup() {
       setError("Passwords do not match");
       return;
     }
-    signupMutation.mutate({ name, email, password, role });
+    if (role === "student" && !/^LCU\/UG\/\d{2}\/\d{5}$/.test(matricNo)) {
+      setError("Matric No must be in the format LCU/UG/XX/XXXXX");
+      return;
+    }
+    signupMutation.mutate({ name, email, password, role, ...(role === "student" ? { matricNo } : {}) });
   };
 
   // User can manually sign up even if they have an active session.
@@ -117,6 +121,20 @@ export default function Signup() {
                   </SelectContent>
                 </Select>
               </div>
+              {role === "student" && (
+                <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <Label htmlFor="matricNo">Matric No</Label>
+                  <Input
+                    id="matricNo"
+                    type="text"
+                    placeholder="LCU/UG/XX/XXXXX"
+                    value={matricNo}
+                    onChange={(e) => setMatricNo(e.target.value.toUpperCase())}
+                    required={role === "student"}
+                  />
+                  <p className="text-xs text-slate-500">Must be in the format: LCU/UG/XX/XXXXX</p>
+                </div>
+              )}
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Button
                 type="submit"
