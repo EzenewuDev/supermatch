@@ -1,11 +1,13 @@
 import { handle } from 'hono/vercel';
 import app from '../server/boot.js';
 
-export const GET = handle(app);
-export const POST = handle(app);
-export const PUT = handle(app);
-export const PATCH = handle(app);
-export const DELETE = handle(app);
-export const OPTIONS = handle(app);
+export const runtime = 'nodejs';
 
-export default handle(app);
+const handler = handle(app);
+
+export const GET = handler;
+export const POST = handler;
+export const PUT = handler;
+export const PATCH = handler;
+export const DELETE = handler;
+export const OPTIONS = handler;
