@@ -15,8 +15,12 @@ export default function Login() {
   // useAuth removed since we no longer redirect
 
   const loginMutation = trpc.auth.login.useMutation({
-    onSuccess: () => {
-      navigate("/student/dashboard");
+    onSuccess: (data) => {
+      if (data.appRole) {
+        navigate(`/${data.appRole}/dashboard`);
+      } else {
+        navigate("/student/dashboard");
+      }
     },
     onError: (err) => {
       setError(err.message || "Login failed");

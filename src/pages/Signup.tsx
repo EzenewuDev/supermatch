@@ -6,19 +6,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BookOpen } from "lucide-react";
 import { trpc } from "@/providers/trpc";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState<"student" | "supervisor">("student");
   const [error, setError] = useState("");
   const navigate = useNavigate();
   // useAuth removed since we no longer redirect
 
   const signupMutation = trpc.auth.signup.useMutation({
-    onSuccess: () => {
-      navigate("/student/dashboard");
+    onSuccess: (_, variables) => {
+      navigate(`/${variables.role}/dashboard`);
     },
     onError: (err) => {
       setError(err.message || "Signup failed");
@@ -32,7 +34,7 @@ export default function Signup() {
       setError("Passwords do not match");
       return;
     }
-    signupMutation.mutate({ name, email, password });
+    signupMutation.mutate({ name, email, password, role });
   };
 
   // User can manually sign up even if they have an active session.
@@ -103,6 +105,18 @@ export default function Signup() {
                   required
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="role">Role</Label>
+                <Select value={role} onValueChange={(value) => setRole(value as "student" | "supervisor")}>
+                  <SelectTrigger id="role">
+                    <SelectValue placeholder="Select a role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="student">Student</SelectItem>
+                    <SelectItem value="supervisor">Supervisor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Button
                 type="submit"
@@ -132,3 +146,4 @@ export default function Signup() {
     </div>
   );
 }
+

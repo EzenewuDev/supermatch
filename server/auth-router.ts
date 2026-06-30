@@ -5,13 +5,14 @@ import { getSessionCookieOptions } from "./lib/cookies.js";
 import { createRouter, authedQuery, publicQuery } from "./middleware.js";
 import { signupUser, loginUser } from "./kimi/auth.js";
 import { signSessionToken } from "./kimi/session.js";
+import { findUserRole } from "./queries/users.js";
 
 export const authRouter = createRouter({
   me: authedQuery.query((opts) => opts.ctx.user),
   signup: publicQuery
-    .input(z.object({ name: z.string().min(1), email: z.string().email(), password: z.string().min(6) }))
+    .input(z.object({ name: z.string().min(1), email: z.string().email(), password: z.string().min(6), role: z.enum(["student", "supervisor"]) }))
     .mutation(async ({ ctx, input }) => {
-      const user = await signupUser(input.name, input.email, input.password);
+      const user = await signupUser(input.name, input.email, input.password, input.role);
       const token = await signSessionToken({ userId: user.id });
       const opts = getSessionCookieOptions(ctx.req.headers);
       ctx.resHeaders.append(
@@ -24,7 +25,8 @@ export const authRouter = createRouter({
           maxAge: Session.maxAgeMs / 1000,
         }),
       );
-      return user;
+      const role = await findUserRole(user.id);
+      return { ...user, appRole: role };
     }),
   login: publicQuery
     .input(z.object({ email: z.string().email(), password: z.string().min(6) }))
@@ -42,7 +44,8 @@ export const authRouter = createRouter({
           maxAge: Session.maxAgeMs / 1000,
         }),
       );
-      return user;
+      const role = await findUserRole(user.id);
+      return { ...user, appRole: role };
     }),
   logout: authedQuery.mutation(async ({ ctx }) => {
     const opts = getSessionCookieOptions(ctx.req.headers);

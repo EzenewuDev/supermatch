@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 import {
   GraduationCap,
   AlertCircle,
@@ -332,84 +333,219 @@ function StudentDashboardSkeleton() {
 }
 
 function CreateProfileForm({ onCreated }: { onCreated: () => void }) {
-  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+  const [formData, setFormData] = useState({
+    name: user?.name || "",
+    studentId: "",
+    cgpa: "",
+    department: "",
+    level: "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   const mutation = trpc.student.createProfile.useMutation({
     onSuccess: () => {
-      toast.success("Profile created successfully");
+      toast.success("🎉 Profile created! Welcome to SuperMatch.");
       onCreated();
     },
     onError: (error) => {
       toast.error(error.message || "Failed to create profile");
-      setLoading(false);
-    }
+    },
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+    if (!formData.name.trim()) newErrors.name = "Full name is required";
+    if (!formData.studentId.trim()) newErrors.studentId = "Student ID is required";
+    const cgpaVal = parseFloat(formData.cgpa);
+    if (!formData.cgpa || isNaN(cgpaVal) || cgpaVal < 0 || cgpaVal > 4.0)
+      newErrors.cgpa = "CGPA must be between 0.00 and 4.00";
+    if (!formData.department) newErrors.department = "Please select a department";
+    if (!formData.level) newErrors.level = "Please select your level";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    const formData = new FormData(e.currentTarget);
+    if (!validate()) return;
     mutation.mutate({
-      name: formData.get("name") as string,
-      studentId: formData.get("studentId") as string,
-      cgpa: parseFloat(formData.get("cgpa") as string),
-      department: formData.get("department") as string,
-      level: formData.get("level") as string,
+      name: formData.name,
+      studentId: formData.studentId,
+      cgpa: parseFloat(formData.cgpa),
+      department: formData.department,
+      level: formData.level,
     });
   };
 
+  const departments = [
+    "Computer Science",
+    "Software Engineering",
+    "Information Technology",
+    "Electrical Engineering",
+    "Mechanical Engineering",
+    "Civil Engineering",
+    "Chemical Engineering",
+    "Mathematics",
+    "Physics",
+    "Statistics",
+    "Biochemistry",
+    "Microbiology",
+    "Economics",
+    "Business Administration",
+    "Accounting",
+  ];
+
   return (
-    <div className="max-w-md mx-auto mt-10">
-      <Card>
-        <CardHeader>
-          <CardTitle>Complete Your Profile</CardTitle>
-          <CardDescription>We need some details to set up your dashboard.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input id="name" name="name" required placeholder="John Doe" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="studentId">Student ID</Label>
-              <Input id="studentId" name="studentId" required placeholder="STU12345" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="cgpa">Current CGPA</Label>
-              <Input id="cgpa" name="cgpa" type="number" step="0.01" min="0" max="4.0" required placeholder="3.50" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="department">Department</Label>
-              <Select name="department" required defaultValue="Computer Science">
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Department" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Computer Science">Computer Science</SelectItem>
-                  <SelectItem value="Software Engineering">Software Engineering</SelectItem>
-                  <SelectItem value="Information Technology">Information Technology</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="level">Level</Label>
-              <Select name="level" required defaultValue="400">
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="300">300 Level</SelectItem>
-                  <SelectItem value="400">400 Level</SelectItem>
-                  <SelectItem value="500">500 Level</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Saving..." : "Save Profile"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-lg">
+        {/* Welcome Banner */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-600 mb-4 shadow-lg shadow-indigo-200">
+            <GraduationCap className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900">
+            Welcome{user?.name ? `, ${user.name.split(" ")[0]}` : ""}! 👋
+          </h1>
+          <p className="text-slate-500 mt-1 text-sm">
+            Set up your student profile to get started with SuperMatch
+          </p>
+        </div>
+
+        <Card className="border-slate-200 shadow-md">
+          <CardHeader className="pb-4 border-b border-slate-100">
+            <CardTitle className="text-base font-semibold text-slate-800">
+              Complete Your Profile
+            </CardTitle>
+            <CardDescription>
+              This information helps us match you with the right supervisor.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Name */}
+              <div className="space-y-1.5">
+                <Label htmlFor="cp-name" className="text-sm font-medium text-slate-700">
+                  Full Name
+                </Label>
+                <Input
+                  id="cp-name"
+                  placeholder="e.g. John Adebayo"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className={errors.name ? "border-red-400 focus-visible:ring-red-300" : ""}
+                />
+                {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
+              </div>
+
+              {/* Student ID */}
+              <div className="space-y-1.5">
+                <Label htmlFor="cp-studentId" className="text-sm font-medium text-slate-700">
+                  Student ID / Matric Number
+                </Label>
+                <Input
+                  id="cp-studentId"
+                  placeholder="e.g. 20/ENG/CS/001"
+                  value={formData.studentId}
+                  onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
+                  className={errors.studentId ? "border-red-400 focus-visible:ring-red-300" : ""}
+                />
+                {errors.studentId && <p className="text-xs text-red-500 mt-1">{errors.studentId}</p>}
+              </div>
+
+              {/* Department + Level side by side */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="cp-department" className="text-sm font-medium text-slate-700">
+                    Department
+                  </Label>
+                  <Select
+                    value={formData.department}
+                    onValueChange={(val) => setFormData({ ...formData, department: val })}
+                  >
+                    <SelectTrigger
+                      id="cp-department"
+                      className={`w-full ${errors.department ? "border-red-400" : ""}`}
+                    >
+                      <SelectValue placeholder="Select dept." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {departments.map((d) => (
+                        <SelectItem key={d} value={d}>{d}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.department && <p className="text-xs text-red-500 mt-1">{errors.department}</p>}
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="cp-level" className="text-sm font-medium text-slate-700">
+                    Level
+                  </Label>
+                  <Select
+                    value={formData.level}
+                    onValueChange={(val) => setFormData({ ...formData, level: val })}
+                  >
+                    <SelectTrigger
+                      id="cp-level"
+                      className={`w-full ${errors.level ? "border-red-400" : ""}`}
+                    >
+                      <SelectValue placeholder="Level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="100">100 Level</SelectItem>
+                      <SelectItem value="200">200 Level</SelectItem>
+                      <SelectItem value="300">300 Level</SelectItem>
+                      <SelectItem value="400">400 Level</SelectItem>
+                      <SelectItem value="500">500 Level</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.level && <p className="text-xs text-red-500 mt-1">{errors.level}</p>}
+                </div>
+              </div>
+
+              {/* CGPA */}
+              <div className="space-y-1.5">
+                <Label htmlFor="cp-cgpa" className="text-sm font-medium text-slate-700">
+                  Current CGPA
+                  <span className="ml-1 text-xs font-normal text-slate-400">(out of 4.00)</span>
+                </Label>
+                <Input
+                  id="cp-cgpa"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="4.0"
+                  placeholder="e.g. 3.75"
+                  value={formData.cgpa}
+                  onChange={(e) => setFormData({ ...formData, cgpa: e.target.value })}
+                  className={errors.cgpa ? "border-red-400 focus-visible:ring-red-300" : ""}
+                />
+                {errors.cgpa && <p className="text-xs text-red-500 mt-1">{errors.cgpa}</p>}
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-white font-medium mt-2"
+                disabled={mutation.isPending}
+              >
+                {mutation.isPending ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Setting up your dashboard...
+                  </span>
+                ) : (
+                  "Create My Dashboard"
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        <p className="text-center text-xs text-slate-400 mt-4">
+          You can update your profile details later from your dashboard settings.
+        </p>
+      </div>
     </div>
   );
 }

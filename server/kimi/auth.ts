@@ -2,7 +2,7 @@ import * as cookie from "cookie";
 import { Session } from "../../contracts/constants.js";
 import { Errors } from "../../contracts/errors.js";
 import { verifySessionToken } from "./session.js";
-import { findUserById, findUserByEmail, createUser, updateLastSignIn } from "../queries/users.js";
+import { findUserById, findUserByEmail, createUser, updateLastSignIn, assignUserRole } from "../queries/users.js";
 import { createHash } from "crypto";
 
 // Simple hash function (NOT PRODUCTION READY - just for demo)
@@ -37,6 +37,7 @@ export async function signupUser(
   name: string,
   email: string,
   password: string,
+  role: "student" | "supervisor",
 ) {
   const existingUser = await findUserByEmail(email);
   if (existingUser) {
@@ -49,6 +50,7 @@ export async function signupUser(
     passwordHash,
   });
   const userId = result.insertedId;
+  await assignUserRole(userId, role);
   await updateLastSignIn(userId);
   const user = await findUserById(userId);
   if (!user) throw new Error("Failed to create user");

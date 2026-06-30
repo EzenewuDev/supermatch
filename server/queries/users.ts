@@ -74,3 +74,18 @@ export async function upsertUser(data: InsertUser) {
       set: updateSet,
     });
 }
+
+export async function assignUserRole(userId: number, role: "student" | "supervisor" | "admin") {
+  await getDb().insert(schema.userRoles).values({
+    userId,
+    role,
+  });
+}
+export async function findUserRole(userId: number) {
+  const rows = await getDb()
+    .select()
+    .from(schema.userRoles)
+    .where(eq(schema.userRoles.userId, userId))
+    .limit(1);
+  return rows[0]?.role || "student";
+}

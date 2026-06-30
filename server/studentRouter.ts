@@ -13,39 +13,13 @@ import { TRPCError } from "@trpc/server";
 export const studentRouter = createRouter({
   dashboard: authedQuery.query(async ({ ctx }) => {
     const db = getDb();
-    // Find student record linked to this user
-    const studentRole = await db
+    // Find student record linked to this specific user only
+    const studentRows = await db
       .select()
-      .from(userRoles)
-      .where(
-        and(
-          eq(userRoles.userId, ctx.user.id),
-          eq(userRoles.role, "student")
-        )
-      )
+      .from(students)
+      .where(eq(students.userId, ctx.user.id))
       .limit(1);
-
-    // For demo purposes, if no role found, just get the first student
-    let student;
-    if (studentRole.length > 0) {
-      // In a real app, students table would have userId linking
-      const studentRows = await db
-        .select()
-        .from(students)
-        .where(eq(students.userId, ctx.user.id))
-        .limit(1);
-      student = studentRows[0];
-    }
-
-    if (!student) {
-      // Demo fallback: get student by a predictable mapping
-      const allStudents = await db
-        .select()
-        .from(students)
-        .orderBy(students.id)
-        .limit(1);
-      student = allStudents[0];
-    }
+    const student = studentRows[0];
 
     if (!student) {
       return {
@@ -146,16 +120,7 @@ export const studentRouter = createRouter({
       .from(students)
       .where(eq(students.userId, ctx.user.id))
       .limit(1);
-
-    let student = studentRows[0];
-    if (!student) {
-      const allStudents = await db
-        .select()
-        .from(students)
-        .orderBy(students.id)
-        .limit(1);
-      student = allStudents[0];
-    }
+    const student = studentRows[0];
 
     if (!student) {
       return { transcript: [] };
@@ -216,23 +181,12 @@ export const studentRouter = createRouter({
   preferences: createRouter({
     list: authedQuery.query(async ({ ctx }) => {
       const db = getDb();
-      // Find student for this user
       const studentRows = await db
         .select()
         .from(students)
         .where(eq(students.userId, ctx.user.id))
         .limit(1);
-
-      let student = studentRows[0];
-      if (!student) {
-        const allStudents = await db
-          .select()
-          .from(students)
-          .orderBy(students.id)
-          .limit(1);
-        student = allStudents[0];
-      }
-
+      const student = studentRows[0];
       if (!student) return [];
       return findPreferencesByStudent(student.id);
     }),
@@ -277,16 +231,7 @@ export const studentRouter = createRouter({
           .from(students)
           .where(eq(students.userId, ctx.user.id))
           .limit(1);
-
-        let student = studentRows[0];
-        if (!student) {
-          const allStudents = await db
-            .select()
-            .from(students)
-            .orderBy(students.id)
-            .limit(1);
-          student = allStudents[0];
-        }
+        const student = studentRows[0];
 
         if (!student) {
           throw new TRPCError({
