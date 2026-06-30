@@ -10,7 +10,10 @@ let instance: ReturnType<typeof drizzle<typeof fullSchema>>;
 
 export function getDb() {
   if (!instance) {
-    const client = createClient({ url: env.databaseUrl });
+    const client = createClient({ 
+      url: env.databaseUrl,
+      ...(env.databaseAuthToken ? { authToken: env.databaseAuthToken } : {})
+    });
     instance = drizzle(client, {
       schema: fullSchema,
     });

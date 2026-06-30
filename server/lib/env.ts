@@ -13,5 +13,6 @@ export const env = {
   appSecret: required("APP_SECRET"),
   isProduction: process.env.NODE_ENV === "production",
   databaseUrl: process.env.DATABASE_URL || "file:local.db",
+  databaseAuthToken: process.env.DATABASE_AUTH_TOKEN,
   ownerUnionId: process.env.OWNER_UNION_ID ?? "",
 };
